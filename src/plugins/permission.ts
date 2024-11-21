@@ -5,9 +5,10 @@ import {
 } from "vue-router";
 
 import NProgress from "@/utils/nprogress";
-import { TOKEN_KEY } from "@/enums/CacheEnum";
+import { getToken } from "@/utils/auth";
 import router from "@/router";
 import { usePermissionStore, useUserStore } from "@/store";
+import getPageTitle from "@/utils/get-page-title";
 
 export function setupPermission() {
   // 白名单路由
@@ -15,7 +16,10 @@ export function setupPermission() {
 
   router.beforeEach(async (to, from, next) => {
     NProgress.start();
-    const hasToken = localStorage.getItem(TOKEN_KEY);
+
+    document.title = getPageTitle(to.meta.title as string);
+
+    const hasToken = getToken();
 
     if (hasToken) {
       if (to.path === "/login") {
@@ -26,7 +30,6 @@ export function setupPermission() {
         const userStore = useUserStore();
         const hasRoles =
           userStore.user.roles && userStore.user.roles.length > 0;
-
         if (hasRoles) {
           // 如果未匹配到任何路由，跳转到404页面
           if (to.matched.length === 0) {
@@ -90,14 +93,13 @@ export function hasAuth(
   value: string | string[],
   type: "button" | "role" = "button"
 ) {
-  const { roles, perms } = useUserStore().user;
-
+  const { roles, permissions } = useUserStore().user;
   // 超级管理员 拥有所有权限
-  if (type === "button" && roles.includes("ROOT")) {
+  if (type === "button" && roles.includes("admin")) {
     return true;
   }
 
-  const auths = type === "button" ? perms : roles;
+  const auths = type === "button" ? permissions : roles;
   return typeof value === "string"
     ? auths.includes(value)
     : value.some((perm) => auths.includes(perm));

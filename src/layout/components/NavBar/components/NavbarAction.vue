@@ -75,15 +75,9 @@
       </div>
       <template #dropdown>
         <el-dropdown-menu>
-          <a
-            target="_blank"
-            href="https://gitee.com/youlaiorg/vue3-element-admin"
-          >
-            <el-dropdown-item>{{ $t("navbar.gitee") }}</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://juejin.cn/post/7228990409909108793">
-            <el-dropdown-item>{{ $t("navbar.document") }}</el-dropdown-item>
-          </a>
+          <router-link to="/profile">
+            <el-dropdown-item>{{ $t("navbar.useradmin") }}</el-dropdown-item>
+          </router-link>
           <el-dropdown-item divided @click="logout">
             {{ $t("navbar.logout") }}
           </el-dropdown-item>

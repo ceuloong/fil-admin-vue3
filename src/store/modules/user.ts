@@ -1,14 +1,30 @@
-import AuthAPI, { type LoginData } from "@/api/auth";
-import UserAPI, { type UserInfo } from "@/api/user";
-import { resetRouter } from "@/router";
 import { store } from "@/store";
-import { TOKEN_KEY } from "@/enums/CacheEnum";
+import { usePermissionStoreHook } from "@/store/modules/permission";
+import { useDictStoreHook } from "@/store/modules/dict";
+
+import AuthAPI, { type LoginData } from "@/api/auth";
+import UserAPI, { type UserInfo } from "@/api/admin/user";
+import { resetRouter } from "@/router";
+import { removeToken, setToken } from "@/utils/auth";
+import storage from "@/utils/storage";
 
 export const useUserStore = defineStore("user", () => {
   const user = ref<UserInfo>({
     roles: [],
-    perms: [],
+    permissions: [],
   });
+  //const userInfo = useStorage<UserInfo>("userInfo", {} as UserInfo);
+  function SET_AVATAR(state: UserInfo) {
+    if (!state.avatar) {
+      state.avatar = "";
+    }
+    const avatar = state.avatar;
+    if (avatar.indexOf("http") !== -1) {
+      state.avatar = avatar;
+    } else {
+      state.avatar = import.meta.env.VITE_APP_API_URL + avatar;
+    }
+  }
 
   /**
    * 登录
@@ -20,8 +36,10 @@ export const useUserStore = defineStore("user", () => {
     return new Promise<void>((resolve, reject) => {
       AuthAPI.login(loginData)
         .then((data) => {
-          const { tokenType, accessToken } = data;
-          localStorage.setItem(TOKEN_KEY, tokenType + " " + accessToken); // Bearer eyJhbGciOiJIUzI1NiJ9.xxx.xxx
+          const { token } = data;
+          console.log("login: token", token);
+          setToken(token);
+          //localStorage.setItem(TOKEN_KEY, TOKEN_TYPE + " " + token); // Bearer eyJhbGciOiJIUzI1NiJ9.xxx.xxx
           resolve();
         })
         .catch((error) => {
@@ -34,14 +52,25 @@ export const useUserStore = defineStore("user", () => {
   function getUserInfo() {
     return new Promise<UserInfo>((resolve, reject) => {
       UserAPI.getInfo()
-        .then((data) => {
-          if (!data) {
+        .then((res) => {
+          const { data } = res;
+          if (!res.data) {
             reject("Verification failed, please Login again.");
             return;
           }
           if (!data.roles || data.roles.length <= 0) {
             reject("getUserInfo: roles must be a non-null array!");
             return;
+          }
+          if (!data.avatar) {
+            data.avatar = "";
+          }
+          const { avatar } = data;
+
+          if (avatar.indexOf("http") !== -1) {
+            data.avatar = avatar;
+          } else {
+            data.avatar = import.meta.env.VITE_APP_API_URL + avatar;
           }
           Object.assign(user.value, { ...data });
           resolve(data);
@@ -57,8 +86,9 @@ export const useUserStore = defineStore("user", () => {
     return new Promise<void>((resolve, reject) => {
       AuthAPI.logout()
         .then(() => {
-          localStorage.setItem(TOKEN_KEY, "");
+          removeToken(); // must remove  token  first
           location.reload(); // 清空路由
+          storage.clear(); // 清空缓存
           resolve();
         })
         .catch((error) => {
@@ -70,8 +100,22 @@ export const useUserStore = defineStore("user", () => {
   // remove token
   function resetToken() {
     return new Promise<void>((resolve) => {
-      localStorage.setItem(TOKEN_KEY, "");
+      removeToken();
       resetRouter();
+      resolve();
+    });
+  }
+
+  /**
+   *  清理用户会话
+   *
+   * @returns
+   */
+  function clearUserSession() {
+    return new Promise<void>((resolve) => {
+      removeToken();
+      usePermissionStoreHook().resetRouter();
+      useDictStoreHook().clearDictionaryCache();
       resolve();
     });
   }

@@ -8,6 +8,7 @@ import "virtual:svg-icons-register";
 // 样式
 import "element-plus/theme-chalk/dark/css-vars.css";
 import "@/styles/index.scss";
+import "@/styles/admin.scss";
 import "uno.css";
 import "animate.css";
 

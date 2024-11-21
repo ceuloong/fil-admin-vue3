@@ -54,6 +54,19 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: "/profile",
+    component: Layout,
+    redirect: "/profile/index",
+    children: [
+      {
+        path: "index",
+        component: () => import("@/views/profile/index.vue"),
+        name: "Profile",
+        meta: { title: "个人中心", icon: "user", noCache: true, hidden: true },
+      },
+    ],
+  },
 
   // 外部链接
   // {

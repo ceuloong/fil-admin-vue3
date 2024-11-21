@@ -1,5 +1,5 @@
 {
-  "name": "vue3-element-admin",
+  "name": "vue3-fil-admin",
   "version": "2.13.0",
   "private": true,
   "type": "module",
@@ -55,6 +55,7 @@
     "pinia": "^2.2.2",
     "qs": "^6.13.0",
     "vue": "^3.4.38",
+    "vue-cropper": "^1.1.4",
     "vue-i18n": "9.9.1",
     "vue-router": "^4.4.3"
   },

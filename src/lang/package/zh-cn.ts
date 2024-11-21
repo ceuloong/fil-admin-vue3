@@ -27,9 +27,8 @@ export default {
   // 导航栏国际化
   navbar: {
     dashboard: "首页",
-    logout: "注销登出",
-    document: "项目文档",
-    gitee: "项目地址",
+    logout: "退出登录",
+    useradmin: "个人中心",
   },
   sizeSelect: {
     tooltip: "布局大小",

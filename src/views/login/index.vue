@@ -64,11 +64,11 @@
         </el-tooltip>
 
         <!-- 验证码 -->
-        <el-form-item prop="captchaCode">
+        <el-form-item prop="code">
           <div class="input-wrapper">
             <svg-icon icon-class="captcha" class="mx-2" />
             <el-input
-              v-model="loginData.captchaCode"
+              v-model="loginData.code"
               auto-complete="off"
               size="large"
               class="flex-1"
@@ -104,13 +104,13 @@
     </el-card>
 
     <!-- ICP备案 -->
-    <div class="icp-info" v-show="icpVisible">
+    <!-- <div class="icp-info" v-show="icpVisible">
       <p>
         Copyright © 2021 - 2024 youlai.tech All Rights Reserved. 有来技术
         版权所有
       </p>
       <p>皖ICP备20006496号-3</p>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -156,8 +156,8 @@ const loginFormRef = ref<FormInstance>();
 const loginData = ref<LoginData>({
   username: "admin",
   password: "123456",
-  captchaKey: "",
-  captchaCode: "",
+  code: "",
+  uuid: "",
 });
 
 const loginRules = computed(() => {
@@ -194,8 +194,8 @@ const loginRules = computed(() => {
 /** 获取验证码 */
 function getCaptcha() {
   AuthAPI.getCaptcha().then((data) => {
-    loginData.value.captchaKey = data.captchaKey;
-    captchaBase64.value = data.captchaBase64;
+    loginData.value.uuid = data.id;
+    captchaBase64.value = data.data;
   });
 }
 

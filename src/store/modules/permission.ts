@@ -1,10 +1,12 @@
 import { RouteRecordRaw } from "vue-router";
 import { constantRoutes } from "@/router";
 import { store } from "@/store";
-import MenuAPI, { RouteVO } from "@/api/menu";
+import MenuAPI, { RouteVO } from "@/api/admin/menu";
 
 const modules = import.meta.glob("../../views/**/**.vue");
 const Layout = () => import("@/layout/index.vue");
+
+import router from "@/router";
 
 export const usePermissionStore = defineStore("permission", () => {
   /** 所有路由，包括静态和动态路由 */
@@ -12,14 +14,18 @@ export const usePermissionStore = defineStore("permission", () => {
   /** 混合模式左侧菜单 */
   const mixLeftMenus = ref<RouteRecordRaw[]>([]);
 
+  const isRoutesLoaded = ref(false);
+
   /**
    * 生成动态路由
    */
   function generateRoutes() {
     return new Promise<RouteRecordRaw[]>((resolve, reject) => {
       MenuAPI.getRoutes()
-        .then((data) => {
-          const dynamicRoutes = transformRoutes(data);
+        .then((res) => {
+          const generaRoutes: RouteVO[] = [];
+          generaMenu(generaRoutes, res.data);
+          const dynamicRoutes = transformRoutes(generaRoutes);
           routes.value = constantRoutes.concat(dynamicRoutes);
           resolve(dynamicRoutes);
         })
@@ -41,11 +47,29 @@ export const usePermissionStore = defineStore("permission", () => {
     }
   };
 
+  /**
+   * 重置路由
+   */
+  const resetRouter = () => {
+    // 删除动态路由，保留静态路由
+    routes.value.forEach((route) => {
+      if (route.name && !constantRoutes.find((r) => r.name === route.name)) {
+        router.removeRoute(route.name); // 从 router 实例中移除动态路由
+      }
+    });
+
+    routes.value = [];
+    mixLeftMenus.value = [];
+    isRoutesLoaded.value = false;
+  };
+
   return {
     routes,
     generateRoutes,
     mixLeftMenus,
     setMixLeftMenus,
+    isRoutesLoaded,
+    resetRouter,
   };
 });
 
@@ -61,7 +85,7 @@ const transformRoutes = (routes: RouteVO[]) => {
       tmpRoute.component = Layout;
     } else {
       // 其他菜单，根据组件路径动态加载组件
-      const component = modules[`../../views/${tmpRoute.component}.vue`];
+      const component = modules[`../../views${tmpRoute.component}.vue`];
       if (component) {
         tmpRoute.component = component;
       } else {
@@ -85,4 +109,45 @@ const transformRoutes = (routes: RouteVO[]) => {
  */
 export function usePermissionStoreHook() {
   return usePermissionStore(store);
+}
+
+/**
+ *        path: "/doc",
+          component: "Layout",
+          redirect: "https://juejin.cn/post/7228990409909108793",
+          name: "/doc",
+          meta: {
+            title: "平台文档",
+            icon: "document",
+            hidden: false,
+            alwaysShow: false,
+            params: null,
+          },
+ * 
+ */
+
+/**
+ * 后台查询的菜单数据拼装成路由格式的数据
+ * @param routes
+ */
+export function generaMenu(generaRoutes: RouteVO[], routes: any) {
+  routes.forEach((route: any) => {
+    const children: RouteVO[] = [];
+    const menu = {
+      path: route.path,
+      component: route.component,
+      children: children,
+      name: route.menuName,
+      meta: {
+        title: route.title,
+        icon: route.icon,
+        hidden: route.visible !== "0",
+        alwaysShow: route.alwaysShow === "1",
+      },
+    };
+    if (route.children) {
+      generaMenu(menu.children, route.children);
+    }
+    generaRoutes.push(menu);
+  });
 }

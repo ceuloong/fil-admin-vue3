@@ -12,7 +12,7 @@ declare global {
    * 分页查询参数
    */
   interface PageQuery {
-    pageNum: number;
+    pageIndex: number;
     pageSize: number;
   }
 
@@ -23,7 +23,11 @@ declare global {
     /** 数据列表 */
     list: T;
     /** 总数 */
-    total: number;
+    count: number;
+    /** 总页数 */
+    pageSize: number;
+    /** 当前页码 */
+    pageIndex: number;
   }
 
   /**
@@ -85,11 +89,23 @@ declare global {
    */
   interface OptionType {
     /** 值 */
+    id: string | number;
+    /** 文本 */
+    label: string;
+    /** 状态(1:启用;0:禁用) */
+    status?: string | number;
+    /** 子列表  */
+    children?: OptionType[];
+  }
+
+  /**
+   * 字典数据源
+   */
+  interface DictData {
+    /** 值 */
     value: string | number;
     /** 文本 */
     label: string;
-    /** 子列表  */
-    children?: OptionType[];
   }
 }
 export {};

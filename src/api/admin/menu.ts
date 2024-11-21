@@ -9,8 +9,8 @@ class MenuAPI {
    * @returns 路由列表
    */
   static getRoutes() {
-    return request<any, RouteVO[]>({
-      url: "/api/v1/menus/routes",
+    return request<any, ResponseData<RouteVO[]>>({
+      url: "/api/v1/menurole",
       method: "get",
     });
   }

@@ -9,7 +9,10 @@ declare module "vue" {
   export interface GlobalComponents {
     AppLink: (typeof import("./../components/AppLink/index.vue"))["default"];
     AppMain: (typeof import("./../layout/components/AppMain/index.vue"))["default"];
+    BasicLayout: (typeof import("./../layout/BasicLayout.vue"))["default"];
     Breadcrumb: (typeof import("./../components/Breadcrumb/index.vue"))["default"];
+    Dictionary: (typeof import("./../components/Dictionary/index.vue"))["default"];
+    DictLabel: (typeof import("./../components/Dictionary/DictLabel.vue"))["default"];
     ElAlert: (typeof import("element-plus/es"))["ElAlert"];
     ElBacktop: (typeof import("element-plus/es"))["ElBacktop"];
     ElBadge: (typeof import("element-plus/es"))["ElBadge"];
@@ -34,6 +37,7 @@ declare module "vue" {
     ElLink: (typeof import("element-plus/es"))["ElLink"];
     ElMenu: (typeof import("element-plus/es"))["ElMenu"];
     ElMenuItem: (typeof import("element-plus/es"))["ElMenuItem"];
+    ElPagination: (typeof import("element-plus/es"))["ElPagination"];
     ElRow: (typeof import("element-plus/es"))["ElRow"];
     ElScrollbar: (typeof import("element-plus/es"))["ElScrollbar"];
     ElSubMenu: (typeof import("element-plus/es"))["ElSubMenu"];
@@ -55,6 +59,7 @@ declare module "vue" {
     NavbarAction: (typeof import("./../layout/components/NavBar/components/NavbarAction.vue"))["default"];
     NavbarLeft: (typeof import("./../layout/components/NavBar/components/NavbarLeft.vue"))["default"];
     NavbarRight: (typeof import("./../layout/components/NavBar/components/NavbarRight.vue"))["default"];
+    Pagination: (typeof import("./../components/Pagination/index.vue"))["default"];
     RouterLink: (typeof import("vue-router"))["RouterLink"];
     RouterView: (typeof import("vue-router"))["RouterView"];
     Settings: (typeof import("./../layout/components/Settings/index.vue"))["default"];

@@ -28,8 +28,7 @@ export default {
   navbar: {
     dashboard: "Dashboard",
     logout: "Logout",
-    document: "Document",
-    gitee: "Gitee",
+    useradmin: "Personal Center",
   },
   sizeSelect: {
     tooltip: "Layout Size",
